@@ -35,3 +35,11 @@ app.fetch = function() {
   });
 };
 
+app.clearMessages = function() {
+  $('#chats').empty();
+};
+
+app.renderMessage = function(message) {
+  let textContent = message.text;
+  $('#chats').append(`<p>${textContent}</p>`);
+};
