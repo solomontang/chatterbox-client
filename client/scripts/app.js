@@ -43,3 +43,11 @@ app.renderMessage = function(message) {
   let textContent = message.text;
   $('#chats').append(`<p>${textContent}</p>`);
 };
+
+app.renderRoom = function(roomName) {
+  let roomSelector = $('<select></select>');
+  roomSelector.append(`<option>${roomName}</option>`);
+  $('#roomSelect').append(roomSelector);
+};
+
+
