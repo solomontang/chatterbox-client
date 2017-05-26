@@ -45,9 +45,11 @@ app.renderMessage = function(message) {
 };
 
 app.renderRoom = function(roomName) {
-  let roomSelector = $('<select></select>');
-  roomSelector.append(`<option>${roomName}</option>`);
-  $('#roomSelect').append(roomSelector);
+  //--------consider whether this replaces old selector-----
+  // if ($('#roomSelect')) {}
+  let $roomSelector = $('<select></select>');
+  $roomSelector.append(`<option>${roomName}</option>`);
+  $('#roomSelect').append($roomSelector);
 };
 
 
