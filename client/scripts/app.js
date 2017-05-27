@@ -3,13 +3,16 @@
 $(document).ready( function () {
   console.log('inside doc ready');
   app.init();
-  $('.username').on('click', app.handleUsernameClick);
-  $('#send .submit').on('submit', app.handleSubmit);
+  //$('body').on('click', '#main', function() {alert();});
+  // $('body').on('click', '.username', app.handleUsernameClick);
+  // $('#send .submit').on('click', '#send .submit', app.handleSubmit);
+  $('#send button').click(function() { app.handleMsgSubmit(); }); 
 });
 
 
 var app = {
-  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages'
+  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
+  friends: []
 };
 
 app.init = function() {
@@ -42,11 +45,13 @@ app.fetch = function() {
   $.ajax({
     url: this.server,
     type: 'GET',
+    data: {limit: 500},
     contentType: 'application/json',
     success: function(data) {
       console.log('chatterbox: Message received');
       //TODO: app.renderMessage for each element in the fetched array
       data = that.scrubXSS(data);
+      console.log(data);
       that.renderAll(data);
     },
     error: function(data) {
@@ -99,7 +104,7 @@ app.renderMessage = function(message) {
   $messageBodyEl.attr('class', 'messageBody');
 
   $messageWrapper.append($usernameEl, $messageBodyEl);
-  $('#chats').append($messageWrapper);
+  $('#chats').prepend($messageWrapper);
   //$('#chats').append(`<div><p class="${username}"></p><p><${text}</p></div>`);
 };
 
@@ -117,13 +122,25 @@ app.renderRoom = function(roomName = '') {
 
 app.handleUsernameClick = function() {
   console.log('Username clicked');
-  //create friend's list?
+  //click a user name
+  //get username and push into friends property
+  //every click on person's name
+    //(toggle friend class) ~4 lines of code?
 };
 
-app.handleSubmit = function() {
+app.handleMsgSubmit = function() {
   console.log('submit clicked');
+  
   //$('#send .submit').on('submit', this.handleSubmit.call(this));
-  console.log('submit value', $('#send .submit').value);
+  //console.log('submit value', $('#send button').val());
+  console.log('submit value', $('#send input').val());
+  let msgText = $('#messageToSubmit').val();
+  let message = {
+    username: window.location.search.slice(10),
+    text: msgText,
+    roomname: ''
+  };
+  app.renderMessage(message);
 };
 
 //app.filterFeed = function(data) {}
