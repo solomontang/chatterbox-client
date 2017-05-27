@@ -4,9 +4,9 @@ $(document).ready( function () {
   console.log('inside doc ready');
   app.init();
   //$('body').on('click', '#main', function() {alert();});
-  // $('body').on('click', '.username', app.handleUsernameClick);
+  $('body').on('click', '.username', function() {app.handleUsernameClick($(this));});
   // $('#send .submit').on('click', '#send .submit', app.handleSubmit);
-  $('.chat p').click(function() { app.handleUsernameClick(); });
+  // $('.username').click(function() { app.handleUsernameClick(); });
   $('#send button').click(function() { app.handleMsgSubmit(); }); 
   $('.roomSelect').change(function() { app.filterFeed($('.roomSelect').val()); });
 });
@@ -14,7 +14,9 @@ $(document).ready( function () {
 
 var app = {
   server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
-  friends: []
+  friends: [],
+  data: {},
+  roomname: 'lobby'
 };
 
 app.init = function() {
@@ -123,7 +125,7 @@ app.renderMessage = function(message) {
   //$('#chats').append(`<div><p class="${username}"></p><p><${text}</p></div>`);
 };
 
-app.renderRoom = function(roomName = '') {
+app.renderRoom = function(roomName) {
   console.log('renderRoom');
   //--------consider whether this replaces old selector-----
   var $roomSelector;
@@ -135,8 +137,9 @@ app.renderRoom = function(roomName = '') {
   $roomSelector.append($option);
 };
 
-app.handleUsernameClick = function() {
-  console.log('Username clicked');
+app.handleUsernameClick = function($node) {
+  console.log('Username clicked', $node);
+  $node.toggleClass('friend');
   //click a user name
   
   //get username and push into friends property
@@ -154,19 +157,20 @@ app.handleMsgSubmit = function() {
   let message = {
     username: window.location.search.slice(10),
     text: msgText,
-    roomname: ''
+    roomname: this.roomname
   };
   app.send(message);
 };
 
 app.filterFeed = function(roomName) {
-  alert(roomName);
+  //alert(roomName);
   var filteredMsgs = this.data.results.filter(function(message) {
     return message.roomname === roomName;
   });
   var newData = {results: filteredMsgs};
   this.clearMessages();
   this.renderAll(newData);
+  this.roomname = roomName;
   console.log(newData);
 };
 //use renderFeed
