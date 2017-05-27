@@ -18,7 +18,7 @@ app.init = function() {
 
 app.send = function(message) {
   //TODO: attach app.send functionality to 'submit' action
-  console.log('send');
+  //console.log('send');
   $.ajax({
     url: this.server,
     type: 'POST',
@@ -35,6 +35,7 @@ app.send = function(message) {
 
 app.fetch = function() {
   console.log('fetch');
+  let that = this;
   $.ajax({
     url: this.server,
     type: 'GET',
@@ -43,6 +44,7 @@ app.fetch = function() {
       console.log('chatterbox: Message received');
       //TODO: app.renderMessage for each element in the fetched array
       console.log(data);
+      that.renderFeed(data);
     },
     error: function(data) {
       console.error('chatterbox: Failed to receive message', data);
@@ -53,6 +55,15 @@ app.fetch = function() {
 app.clearMessages = function() {
   $('#chats').empty();
 };
+
+app.renderFeed = function(data) {
+  //loop that builds each message
+  var that = this;
+  data.results.forEach((message) => {
+    that.renderMessage(message);
+  });
+};
+
 
 app.renderMessage = function(message) {
   let {username, text, roomname} = message;
@@ -95,7 +106,8 @@ app.handleSubmit = function() {
   console.log('submit clicked');
 };
 
-//app.filterFeed = function() {}
+//app.filterFeed = function(data) {}
+//use renderFeed
 //TODO: should filter the fetched array messages by selected room for display
 //property on app that is updated to current room upon selection
 app.init();
