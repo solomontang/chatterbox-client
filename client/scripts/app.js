@@ -1,6 +1,11 @@
 // YOUR CODE HERE:
 //{ url: 'http://parse.hrsf.hackreactor.com/chatterbox/classes/messages' };
-
+$(document).ready( function () {
+  console.log('inside doc ready');
+  app.init();
+  $('.username').on('click', app.handleUsernameClick);
+  $('#send .submit').on('submit', app.handleSubmit);
+});
 
 
 var app = {
@@ -12,8 +17,6 @@ app.init = function() {
   // this.query();
   console.log('init');
   this.fetch();
-  $('.username').on('click', this.handleUsernameClick.call(this));
-  $('#send .submit').on('submit', this.handleSubmit.call(this));
 };
 
 app.send = function(message) {
@@ -44,7 +47,9 @@ app.fetch = function() {
       console.log('chatterbox: Message received');
       //TODO: app.renderMessage for each element in the fetched array
       console.log(data);
-      that.renderFeed(data);
+      data = that.scrubXSS(data);
+      console.log(data);
+      that.renderAll(data);
     },
     error: function(data) {
       console.error('chatterbox: Failed to receive message', data);
@@ -56,12 +61,30 @@ app.clearMessages = function() {
   $('#chats').empty();
 };
 
-app.renderFeed = function(data) {
+app.renderAll = function(data) {
   //loop that builds each message
   var that = this;
+  var roomList = [];
   data.results.forEach((message) => {
     that.renderMessage(message);
+    if (!roomList.includes(message.roomname)) {
+      roomList.push(message.roomname);    
+    }
   });
+  console.log('roomList', roomList);
+  for (room of roomList) {
+    that.renderRoom(room);
+  }
+};
+
+app.scrubXSS = function(data) {
+  console.log('scrub');
+  data.results.forEach( function(message) {
+    for (var key in message) {
+      message[key] = xssFilters.inHTMLData(message[key]);
+    }
+  });
+  return data;
 };
 
 
@@ -69,9 +92,9 @@ app.renderMessage = function(message) {
   let {username, text, roomname} = message;
 
   let $messageWrapper = $('<div></div>');
-  $messageWrapper.attr('class', 'messageEl');
+  $messageWrapper.attr('class', 'chat');
 
-  let $usernameEl = $(`<p>${username}</p>`);
+  let $usernameEl = $(`<p>${username}:</p>`);
   $usernameEl.attr('class', 'username');
 
   let $messageBodyEl = $(`<p>${text}</p>`);
@@ -83,11 +106,13 @@ app.renderMessage = function(message) {
 };
 
 app.renderRoom = function(roomName = '') {
+  console.log('renderRoom');
   //--------consider whether this replaces old selector-----
   var $roomSelector;
+  console.log('roomSelect.length', $('#roomSelect').length);
   if ($('#roomSelect').length === 0) {
     $roomSelector = $('<select></select>');
-    $roomSelector.attr('class', 'roomSelect');
+    $roomSelector.attr('id', 'roomSelect');
     $('#main').append($roomSelector);
   }
   $roomSelector = $('#roomSelect');
@@ -104,10 +129,11 @@ app.handleUsernameClick = function() {
 
 app.handleSubmit = function() {
   console.log('submit clicked');
+  //$('#send .submit').on('submit', this.handleSubmit.call(this));
+  console.log('submit value', $('#send .submit').value);
 };
 
 //app.filterFeed = function(data) {}
 //use renderFeed
 //TODO: should filter the fetched array messages by selected room for display
 //property on app that is updated to current room upon selection
-app.init();
