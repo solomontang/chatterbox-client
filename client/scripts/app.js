@@ -10,6 +10,7 @@ var app = {
 app.init = function() {
   // this.renderRoom();
   // this.query();
+  console.log('init');
   this.fetch();
   $('.username').on('click', this.handleUsernameClick.call(this));
   $('#send .submit').on('submit', this.handleSubmit.call(this));
@@ -18,7 +19,7 @@ app.init = function() {
 app.send = function(message) {
   console.log('send');
   $.ajax({
-    url: this.url,
+    url: this.server,
     type: 'POST',
     data: JSON.stringify(message),
     contentType: 'application/json',
@@ -105,4 +106,4 @@ app.handleSubmit = function() {
 };
 
 
-// app.init();
+app.init();
