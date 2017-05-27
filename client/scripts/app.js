@@ -46,9 +46,7 @@ app.fetch = function() {
     success: function(data) {
       console.log('chatterbox: Message received');
       //TODO: app.renderMessage for each element in the fetched array
-      console.log(data);
       data = that.scrubXSS(data);
-      console.log(data);
       that.renderAll(data);
     },
     error: function(data) {
@@ -109,13 +107,8 @@ app.renderRoom = function(roomName = '') {
   console.log('renderRoom');
   //--------consider whether this replaces old selector-----
   var $roomSelector;
-  console.log('roomSelect.length', $('#roomSelect').length);
-  if ($('#roomSelect').length === 0) {
-    $roomSelector = $('<select></select>');
-    $roomSelector.attr('id', 'roomSelect');
-    $('#main').append($roomSelector);
-  }
-  $roomSelector = $('#roomSelect');
+  // console.log('roomSelect.length', $('.roomSelect').length);
+  $roomSelector = $('.roomSelect');
   let $option = $('<option></option>');
   $option.attr('value', roomName);
   $option.text(roomName);
