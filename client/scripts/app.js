@@ -4,15 +4,19 @@
 
 
 var app = {
-  url: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages'
+  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages'
 };
 
 app.init = function() {
   // this.renderRoom();
+  // this.query();
+  this.fetch();
   $('.username').on('click', this.handleUsernameClick.call(this));
+  $('#send .submit').on('submit', this.handleSubmit.call(this));
 };
 
 app.send = function(message) {
+  console.log('send');
   $.ajax({
     url: this.url,
     type: 'POST',
@@ -28,14 +32,29 @@ app.send = function(message) {
 };
 
 app.fetch = function() {
+  console.log('fetch');
   $.ajax({
+    url: this.server,
     type: 'GET',
     contentType: 'application/json',
     success: function(data) {
-      console.log('chatterbox: Message sent');
+      console.log('chatterbox: Message received');
+      console.log(data);
     },
     error: function(data) {
-      console.error('chatterbox: Failed to send message', data);
+      console.error('chatterbox: Failed to receive message', data);
+    }
+  });
+};
+
+app.query = function() {
+  $.ajax({
+    type: 'OPTIONS',
+    success: function(data) {
+      console.log('success', data);
+    },
+    error: function(data) {
+      console.log('error', data);
     }
   });
 };
@@ -77,8 +96,13 @@ app.renderRoom = function(roomName = '') {
 };
 
 app.handleUsernameClick = function() {
-  console.log('clicked!');
-
+  console.log('Username clicked');
+  //create friend's list?
 };
+
+app.handleSubmit = function() {
+  console.log('submit clicked');
+};
+
 
 // app.init();
