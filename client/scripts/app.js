@@ -6,7 +6,9 @@ $(document).ready( function () {
   //$('body').on('click', '#main', function() {alert();});
   // $('body').on('click', '.username', app.handleUsernameClick);
   // $('#send .submit').on('click', '#send .submit', app.handleSubmit);
+  $('.chat p').click(function() { app.handleUsernameClick(); });
   $('#send button').click(function() { app.handleMsgSubmit(); }); 
+  $('.roomSelect').change(function() { app.filterFeed($('.roomSelect').val()); });
 });
 
 
@@ -25,6 +27,7 @@ app.init = function() {
 app.send = function(message) {
   //TODO: attach app.send functionality to 'submit' action
   //console.log('send');
+  let that = this;
   $.ajax({
     url: this.server,
     type: 'POST',
@@ -32,6 +35,8 @@ app.send = function(message) {
     contentType: 'application/json',
     success: function(data) {
       console.log('chatterbox: Message sent');
+      that.clearMessages();
+      that.fetch();
     },
     error: function(data) {
       console.error('chatterbox: Failed to send message', data);
@@ -45,12 +50,14 @@ app.fetch = function() {
   $.ajax({
     url: this.server,
     type: 'GET',
-    data: {limit: 500},
+    data: {limit: 100},
     contentType: 'application/json',
     success: function(data) {
       console.log('chatterbox: Message received');
       //TODO: app.renderMessage for each element in the fetched array
       data = that.scrubXSS(data);
+      that.data = data;
+      that.sortMessages(data);
       console.log(data);
       that.renderAll(data);
     },
@@ -64,10 +71,18 @@ app.clearMessages = function() {
   $('#chats').empty();
 };
 
+app.sortMessages = function(data) {
+  data.results.sort((a, b) => { a.createdAt - b.createdAt; });
+  console.log('sorted', data);
+};
+
+
 app.renderAll = function(data) {
   //loop that builds each message
   var that = this;
   var roomList = [];
+  //sort data.results before the following
+
   data.results.forEach((message) => {
     that.renderMessage(message);
     if (!roomList.includes(message.roomname)) {
@@ -123,6 +138,7 @@ app.renderRoom = function(roomName = '') {
 app.handleUsernameClick = function() {
   console.log('Username clicked');
   //click a user name
+  
   //get username and push into friends property
   //every click on person's name
     //(toggle friend class) ~4 lines of code?
@@ -140,10 +156,19 @@ app.handleMsgSubmit = function() {
     text: msgText,
     roomname: ''
   };
-  app.renderMessage(message);
+  app.send(message);
 };
 
-//app.filterFeed = function(data) {}
+app.filterFeed = function(roomName) {
+  alert(roomName);
+  var filteredMsgs = this.data.results.filter(function(message) {
+    return message.roomname === roomName;
+  });
+  var newData = {results: filteredMsgs};
+  this.clearMessages();
+  this.renderAll(newData);
+  console.log(newData);
+};
 //use renderFeed
 //TODO: should filter the fetched array messages by selected room for display
 //property on app that is updated to current room upon selection
