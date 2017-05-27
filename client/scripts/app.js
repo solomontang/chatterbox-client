@@ -17,6 +17,7 @@ app.init = function() {
 };
 
 app.send = function(message) {
+  //TODO: attach app.send functionality to 'submit' action
   console.log('send');
   $.ajax({
     url: this.server,
@@ -40,22 +41,11 @@ app.fetch = function() {
     contentType: 'application/json',
     success: function(data) {
       console.log('chatterbox: Message received');
+      //TODO: app.renderMessage for each element in the fetched array
       console.log(data);
     },
     error: function(data) {
       console.error('chatterbox: Failed to receive message', data);
-    }
-  });
-};
-
-app.query = function() {
-  $.ajax({
-    type: 'OPTIONS',
-    success: function(data) {
-      console.log('success', data);
-    },
-    error: function(data) {
-      console.log('error', data);
     }
   });
 };
@@ -105,5 +95,7 @@ app.handleSubmit = function() {
   console.log('submit clicked');
 };
 
-
+//app.filterFeed = function() {}
+//TODO: should filter the fetched array messages by selected room for display
+//property on app that is updated to current room upon selection
 app.init();
